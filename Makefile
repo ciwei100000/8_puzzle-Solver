@@ -1,3 +1,3 @@
 all:
-	g++ 8-Puzzle.cpp -std=c++0x
+	g++ PuzzleSolver.cpp -std=c++0x
 
