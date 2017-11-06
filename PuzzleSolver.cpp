@@ -42,15 +42,13 @@ class Puzzle // the puzzle class
 	    this->state = state;  // set current state;
 
 	    for(int i=0; i<N+1; i++){
-	     	
-		this->solution.push_back(i+1); // Set goal state;
 
 		if(state[i]==0){
-		    this->blank_position = i; // store blank positio
-}
-	    }
+		    this->blank_position = i; // store blank position
+                    break;
+                }
 
-            solution.push_back(0);  // Set goal state;
+	    }
 
 	    this->gn = gn;
 	    this->hn = hn;
@@ -128,7 +126,11 @@ class Puzzle // the puzzle class
         }
 
 	int isGoal(){
-	    return this->state == this->solution; //Determine if current state is goal state
+	    for(int i=0; i<N; i++) { //Determine if current state is goal state
+                if(this->state[i] != i+1)
+                    return false;
+            }
+            return true;
 	}
 
 };
@@ -357,5 +359,5 @@ int main(int argc , char **argv){
 
     auto endtime = chrono::steady_clock().now();
     auto timetook = endtime - starttime;
-    cout << "Elapsed time: " << chrono::duration_cast<chrono::microseconds>(timetook).count() << " ms" << endl;
+    cout << "Elapsed time: " << chrono::duration_cast<chrono::microseconds>(timetook).count() << " us" << endl;
 }
