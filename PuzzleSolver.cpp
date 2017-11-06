@@ -41,7 +41,7 @@ class Puzzle // the puzzle class
 
 	    this->state = state;  // set current state;
 
-	    for(size_t i=0; i<N; i++){
+	    for(int i=0; i<N+1; i++){
 	     	
 		this->solution.push_back(i+1); // Set goal state;
 
@@ -189,7 +189,7 @@ int doCleanup(priority_queue<Puzzle*, vector<Puzzle*>, cmp> * nodes){ // Garbage
 
 int doExpand(priority_queue<Puzzle*, vector<Puzzle*>, cmp> * nodes, map<vector<int>,bool> *visted, int choicenum){    //Expand the nodes
 
-    size_t i,j;
+    int i,j;
     int hn = 0;
     Puzzle *newnode;
 
@@ -267,8 +267,8 @@ int general_search(vector<int> inputPuzzle, int choicenum){
 
     cout << "Expanding state" << endl; 
 
-    for(size_t i=0; i<BOARD_SIZE; i++){
-	for(size_t j=0; j<BOARD_SIZE; j++){
+    for(int i=0; i<BOARD_SIZE; i++){
+	for(int j=0; j<BOARD_SIZE; j++){
 	    cout << inputPuzzle[i*BOARD_SIZE+j] << " ";
 	}
 	cout << endl;
