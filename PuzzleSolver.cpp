@@ -2,10 +2,9 @@
 #include <string>
 #include <vector>
 #include <queue>
-#include <unordered_set>
-#include <algorithm> //swap, max
+#include <map>
 #include <math.h> //abs
-#include <chrono>
+#include <chrono> //timer
 
 using namespace std;
 
@@ -174,19 +173,6 @@ struct cmp {   // define the operator used in the priority queue to sort
     }
 };
 
-//Implement Hash for vector<int>, reference:https://stackoverflow.com/questions/29855908/c-unordered-set-of-vectors
-
-struct VectorHash {
-    size_t operator()(const std::vector<int>& v) const {
-        std::hash<int> hasher;
-        size_t seed = 0;
-        for (int i : v) {
-            seed ^= hasher(i) + 0x9e3779b9 + (seed<<6) + (seed>>2);
-        }
-        return seed;
-    }
-};
-
 int doCleanup(priority_queue<Puzzle*, vector<Puzzle*>, cmp> * nodes){ // Garbage Collection
 
     Puzzle *deltmp;
@@ -201,7 +187,7 @@ int doCleanup(priority_queue<Puzzle*, vector<Puzzle*>, cmp> * nodes){ // Garbage
 }
 
 
-int doExpand(priority_queue<Puzzle*, vector<Puzzle*>, cmp> * nodes, unordered_set<vector<int>,VectorHash> *visted, int choicenum){    //Expand the nodes
+int doExpand(priority_queue<Puzzle*, vector<Puzzle*>, cmp> * nodes, map<vector<int>,bool> *visted, int choicenum){    //Expand the nodes
 
     size_t i,j;
     int hn = 0;
@@ -212,7 +198,6 @@ int doExpand(priority_queue<Puzzle*, vector<Puzzle*>, cmp> * nodes, unordered_se
 
     Puzzle *node_t = nodes->top();
     nodes->pop();
-    visted->insert(node_t->showState());
     
     cout << "The best state to be expanded with a g(n)= " << node_t->showGn(); 
     cout << " and h(n) = " << node_t->showHn() << " is" << endl;
@@ -245,7 +230,7 @@ int doExpand(priority_queue<Puzzle*, vector<Puzzle*>, cmp> * nodes, unordered_se
 	                //0-up; 1-down; 2-left; 3-right
         
 	tmpstate = node_t->doMove(i);
-        if(!tmpstate.empty() && !visted->count(tmpstate)){
+        if(!tmpstate.empty() && !(*visted)[tmpstate]){
             
             if(choicenum == 1)
                 hn = 0;
@@ -254,6 +239,7 @@ int doExpand(priority_queue<Puzzle*, vector<Puzzle*>, cmp> * nodes, unordered_se
             if(choicenum == 3)
                 hn = doManhattan(tmpstate);
 	    newnode = new Puzzle(tmpstate, node_t->showGn()+1, hn, node_t->showDepth()+1);
+            (*visted)[tmpstate] = true;
             nodes->push(newnode);		
 	}
     }
@@ -268,7 +254,7 @@ int general_search(vector<int> inputPuzzle, int choicenum){
     int maxqueue = 0; //The maximum number of nodes in the queue
     int depth = 0; //The depth of the goal node
 
-    unordered_set<vector<int>,VectorHash> visted; //Store visted state 
+    map<vector<int>,bool> visted; //Store visted state 
 
     Puzzle *node = new Puzzle(inputPuzzle);  //root node in the search tree;
 
@@ -297,6 +283,8 @@ int general_search(vector<int> inputPuzzle, int choicenum){
     priority_queue<Puzzle*, vector<Puzzle*>, cmp> nodes; // create priority queue that will pop
                                                        // the node with lowest cost
     nodes.push(node);  //push the first element
+
+    visted[inputPuzzle] = true;
 
     while(!nodes.empty()){
 
